@@ -71,15 +71,19 @@ def stop_radio():
         try:
             os.kill(pid, signal.SIGTERM)
             # Wait for process to terminate gracefully
-            time.sleep(0.5)
-            # Check if process still exists before sending SIGKILL
-            try:
-                os.kill(pid, 0)  # Check if process exists
-                # Process still running, force kill
-                os.kill(pid, signal.SIGKILL)
-            except OSError:
-                # Process already terminated, no need to SIGKILL
-                pass
+            for _ in range(5):  # Check 5 times with 0.2s intervals (1 second total)
+                time.sleep(0.2)
+                try:
+                    os.kill(pid, 0)  # Check if process exists
+                except OSError:
+                    # Process terminated successfully
+                    break
+            else:
+                # Process still running after grace period, force kill
+                try:
+                    os.kill(pid, signal.SIGKILL)
+                except OSError:
+                    pass
         except OSError:
             # Process doesn't exist
             pass
@@ -91,7 +95,7 @@ def stop_radio():
 def get_now_playing():
     """Fetch the now playing information from radio.co API"""
     try:
-        with urllib.request.urlopen(METADATA_URL, timeout=5) as response:
+        with urllib.request.urlopen(METADATA_URL, timeout=2) as response:
             data = json.loads(response.read().decode())
             
             # Extract title from the API response
