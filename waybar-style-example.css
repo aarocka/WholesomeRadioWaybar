@@ -1,0 +1,78 @@
+/* Example Waybar Style Configuration for Wholesome Radio Plugin */
+
+* {
+    font-family: "JetBrainsMono Nerd Font", monospace;
+    font-size: 14px;
+}
+
+window#waybar {
+    background-color: rgba(30, 30, 46, 0.9);
+    color: #cdd6f4;
+    border-bottom: 2px solid #89b4fa;
+}
+
+/* Wholesome Radio Module Styling */
+#custom-wholesome-radio {
+    padding: 0 10px;
+    margin: 0 5px;
+    color: #cdd6f4;
+    background-color: transparent;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+}
+
+#custom-wholesome-radio.playing {
+    color: #a6e3a1;
+    font-weight: bold;
+    background-color: rgba(166, 227, 161, 0.1);
+    animation: pulse 2s ease-in-out infinite;
+}
+
+#custom-wholesome-radio.stopped {
+    color: #cdd6f4;
+    opacity: 0.8;
+}
+
+#custom-wholesome-radio:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    cursor: pointer;
+}
+
+/* Pulse animation for playing state */
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.7;
+    }
+}
+
+/* Other module styling examples */
+#clock {
+    padding: 0 10px;
+    color: #89b4fa;
+}
+
+#pulseaudio {
+    padding: 0 10px;
+    color: #f9e2af;
+}
+
+#network {
+    padding: 0 10px;
+    color: #94e2d5;
+}
+
+#battery {
+    padding: 0 10px;
+    color: #a6e3a1;
+}
+
+#battery.charging {
+    color: #f9e2af;
+}
+
+#battery.warning:not(.charging) {
+    color: #f38ba8;
+}
