@@ -84,14 +84,14 @@ get_now_playing() {
     if [ $? -eq 0 ] && [ -n "$response" ]; then
         # Extract title using jq if available, otherwise use grep/sed
         if command -v jq >/dev/null 2>&1; then
-            title=$(echo "$response" | jq -r '.current_track.title // "Wholesome Radio"' 2>/dev/null)
+            title=$(echo "$response" | jq -r '.current_track.title // empty' 2>/dev/null)
         else
-            # Fallback to basic text parsing
-            title=$(echo "$response" | grep -o '"title":"[^"]*"' | head -1 | sed 's/"title":"\(.*\)"/\1/')
+            # Fallback to basic text parsing - handle escaped quotes
+            title=$(echo "$response" | grep -o '"title"[[:space:]]*:[[:space:]]*"[^"]*"' | head -1 | sed 's/^"title"[[:space:]]*:[[:space:]]*"\(.*\)"$/\1/' | sed 's/\\"/"/g')
         fi
         
         # Clean up and validate title
-        if [ -n "$title" ] && [ "$title" != "null" ] && [ "$title" != "Wholesome Radio" ]; then
+        if [ -n "$title" ] && [ "$title" != "null" ]; then
             echo "$title"
             return 0
         fi
@@ -108,6 +108,18 @@ toggle_radio() {
     else
         start_radio
     fi
+}
+
+# Escape JSON special characters
+escape_json() {
+    local str="$1"
+    # Escape backslashes first, then quotes, then newlines, tabs, etc.
+    str="${str//\\/\\\\}"
+    str="${str//\"/\\\"}"
+    str="${str//$'\n'/\\n}"
+    str="${str//$'\r'/\\r}"
+    str="${str//$'\t'/\\t}"
+    echo "$str"
 }
 
 # Main function - outputs JSON for Waybar
@@ -129,7 +141,7 @@ main() {
         local now_playing
         now_playing=$(get_now_playing)
         local text="♫ $now_playing"
-        local tooltip="Now Playing: $now_playing\\nClick to stop"
+        local tooltip="Now Playing: $now_playing\nClick to stop"
         local css_class="playing"
     else
         local text="♫ Wholesome Radio"
@@ -137,8 +149,12 @@ main() {
         local css_class="stopped"
     fi
     
+    # Escape values for JSON
+    text=$(escape_json "$text")
+    tooltip=$(escape_json "$tooltip")
+    css_class=$(escape_json "$css_class")
+    
     # Output JSON for Waybar
-    # Use printf to avoid issues with special characters
     printf '{"text":"%s","tooltip":"%s","class":"%s"}\n' "$text" "$tooltip" "$css_class"
 }
 
