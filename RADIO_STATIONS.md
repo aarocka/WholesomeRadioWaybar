@@ -78,9 +78,11 @@ cp wholesome_radio.py rock_radio.py
 cp wholesome_radio.py jazz_radio.py
 
 # Edit each file with different station URLs
-# Use different PID files for each:
-# rock_radio.py: PID_FILE = "/tmp/rock_radio.pid"
-# jazz_radio.py: PID_FILE = "/tmp/jazz_radio.pid"
+# Use different cache directories or PID file names for each:
+# Edit rock_radio.py:
+# CACHE_DIR = os.path.expanduser("~/.cache/rock_radio")
+# Edit jazz_radio.py:
+# CACHE_DIR = os.path.expanduser("~/.cache/jazz_radio")
 ```
 
 Then add multiple modules to your Waybar config:

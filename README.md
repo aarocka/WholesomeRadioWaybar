@@ -102,8 +102,7 @@ You can customize the following settings in the `wholesome_radio.py` script:
 
 - **RADIO_URL**: The streaming URL for the radio station (default: Wholesome Radio)
 - **METADATA_URL**: The API endpoint for fetching "Now Playing" information
-- **MAX_LENGTH**: Maximum text length before Waybar truncates/scrolls (default: 50)
-- **PID_FILE**: Location of the PID file for tracking the cvlc process
+- **CACHE_DIR**: Location where the PID file is stored (default: ~/.cache/wholesome_radio)
 
 ## Usage
 

@@ -16,8 +16,10 @@ import urllib.error
 # Configuration
 RADIO_URL = "https://streams.radio.co/s2c3cc784b/listen"  # Wholesome Radio stream URL
 METADATA_URL = "https://public.radio.co/stations/s2c3cc784b/status"  # Metadata endpoint
-PID_FILE = "/tmp/wholesome_radio.pid"
-MAX_LENGTH = 50  # Maximum text length before scrolling
+
+# Use user-specific cache directory for PID file
+CACHE_DIR = os.path.expanduser("~/.cache/wholesome_radio")
+PID_FILE = os.path.join(CACHE_DIR, "radio.pid")
 
 
 def get_pid():
@@ -41,6 +43,9 @@ def start_radio():
     # Kill any existing process
     stop_radio()
     
+    # Create cache directory if it doesn't exist
+    os.makedirs(CACHE_DIR, mode=0o700, exist_ok=True)
+    
     # Start cvlc in background
     process = subprocess.Popen(
         ['cvlc', '--intf', 'dummy', RADIO_URL],
@@ -48,9 +53,13 @@ def start_radio():
         stderr=subprocess.DEVNULL
     )
     
-    # Save PID
-    with open(PID_FILE, 'w') as f:
-        f.write(str(process.pid))
+    # Save PID with secure permissions
+    old_umask = os.umask(0o077)  # Temporarily set umask to create file with 0o600
+    try:
+        with open(PID_FILE, 'w') as f:
+            f.write(str(process.pid))
+    finally:
+        os.umask(old_umask)  # Restore original umask
     
     return process.pid
 
@@ -61,13 +70,18 @@ def stop_radio():
     if pid:
         try:
             os.kill(pid, signal.SIGTERM)
+            # Wait for process to terminate gracefully
             time.sleep(0.5)
-            # Force kill if still running
+            # Check if process still exists before sending SIGKILL
             try:
+                os.kill(pid, 0)  # Check if process exists
+                # Process still running, force kill
                 os.kill(pid, signal.SIGKILL)
             except OSError:
+                # Process already terminated, no need to SIGKILL
                 pass
         except OSError:
+            # Process doesn't exist
             pass
         
         if os.path.exists(PID_FILE):
