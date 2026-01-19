@@ -10,23 +10,25 @@ A Waybar plugin that allows you to listen to Wholesome Radio with a single click
 
 - [Waybar](https://github.com/Alexays/Waybar)
 - VLC media player with cvlc (command-line interface)
-- Python 3.6+
+- Bash shell
+- curl (for fetching metadata)
+- jq (optional, for better JSON parsing - will fallback to grep/sed if not available)
 
 ### Installing VLC
 
 **Arch Linux:**
 ```bash
-sudo pacman -S vlc
+sudo pacman -S vlc curl jq
 ```
 
 **Debian/Ubuntu:**
 ```bash
-sudo apt install vlc
+sudo apt install vlc curl jq
 ```
 
 **Fedora:**
 ```bash
-sudo dnf install vlc
+sudo dnf install vlc curl jq
 ```
 
 ## Installation
@@ -39,12 +41,12 @@ cd WholesomeRadioWaybar
 
 2. Make the script executable:
 ```bash
-chmod +x wholesome_radio.py
+chmod +x wholesome_radio.sh
 ```
 
 3. Copy the script to a location in your PATH (optional but recommended):
 ```bash
-sudo cp wholesome_radio.py /usr/local/bin/wholesome_radio
+sudo cp wholesome_radio.sh /usr/local/bin/wholesome_radio
 ```
 
 Or keep it in a local directory and reference the full path in your Waybar config.
@@ -60,17 +62,17 @@ Add the following to your Waybar configuration file (usually `~/.config/waybar/c
     "modules-right": ["custom/wholesome-radio", "other-modules"],
     
     "custom/wholesome-radio": {
-        "exec": "/path/to/wholesome_radio.py",
+        "exec": "/path/to/wholesome_radio.sh",
         "return-type": "json",
         "interval": 5,
-        "on-click": "/path/to/wholesome_radio.py toggle",
+        "on-click": "/path/to/wholesome_radio.sh toggle",
         "format": "{}",
         "max-length": 50
     }
 }
 ```
 
-Replace `/path/to/wholesome_radio.py` with the actual path to the script (e.g., `/usr/local/bin/wholesome_radio` or `~/.config/waybar/scripts/wholesome_radio.py`).
+Replace `/path/to/wholesome_radio.sh` with the actual path to the script (e.g., `/usr/local/bin/wholesome_radio` or `~/.config/waybar/scripts/wholesome_radio.sh`).
 
 ### Style Configuration
 
@@ -98,7 +100,7 @@ Add custom styling to your Waybar style file (usually `~/.config/waybar/style.cs
 
 ### Configuration Options
 
-You can customize the following settings in the `wholesome_radio.py` script:
+You can customize the following settings in the `wholesome_radio.sh` script:
 
 - **RADIO_URL**: The streaming URL for the radio station (default: Wholesome Radio)
 - **METADATA_URL**: The API endpoint for fetching "Now Playing" information
@@ -118,10 +120,10 @@ You can also control the radio from the command line:
 
 ```bash
 # Toggle playback
-/path/to/wholesome_radio.py toggle
+/path/to/wholesome_radio.sh toggle
 
 # Check status
-/path/to/wholesome_radio.py
+/path/to/wholesome_radio.sh
 ```
 
 ## Troubleshooting
@@ -144,11 +146,11 @@ You can also control the radio from the command line:
 
 ### Using a Different Radio Station
 
-To use a different radio station, modify these variables in `wholesome_radio.py`:
+To use a different radio station, modify these variables in `wholesome_radio.sh`:
 
-```python
-RADIO_URL = "your-stream-url-here"
-METADATA_URL = "your-metadata-api-url-here"  # Optional, for "Now Playing" info
+```bash
+RADIO_URL="your-stream-url-here"
+METADATA_URL="your-metadata-api-url-here"  # Optional, for "Now Playing" info
 ```
 
 If your station doesn't have a metadata API, the script will simply display the station name.
@@ -157,8 +159,8 @@ If your station doesn't have a metadata API, the script will simply display the 
 
 Modify the text in the script to use a different icon:
 
-```python
-text = f"🎵 {now_playing}"  # Change the emoji/icon here
+```bash
+text="🎵 $now_playing"  # Change the emoji/icon here
 ```
 
 ## License

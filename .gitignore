@@ -23,6 +23,10 @@ wheels/
 .installed.cfg
 *.egg
 
+# Shell
+*.sh~
+*.bak
+
 # IDE
 .vscode/
 .idea/

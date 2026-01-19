@@ -9,10 +9,10 @@
     "modules-right": ["custom/wholesome-radio", "pulseaudio", "network", "battery"],
     
     "custom/wholesome-radio": {
-        "exec": "~/.config/waybar/scripts/wholesome_radio.py",
+        "exec": "~/.config/waybar/scripts/wholesome_radio.sh",
         "return-type": "json",
         "interval": 5,
-        "on-click": "~/.config/waybar/scripts/wholesome_radio.py toggle",
+        "on-click": "~/.config/waybar/scripts/wholesome_radio.sh toggle",
         "format": "{}",
         "max-length": 50,
         "tooltip": true
